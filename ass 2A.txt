@@ -1,0 +1,248 @@
+Creating Database Named: University
+mysql> create database university;
+Query OK, 1 row affected (0.01 sec)
+mysql> show databases;
++--------------------+
+| Database |
++--------------------+
+| book_shop |
+| cat_app |
+| hospital |
+| information_schema |
+| market |
+| medical |
+| mysql |
+| newdatabase |
+| performance_schema |
+| sys |
+| university |
++--------------------+
+11 rows in set (0.00 sec)
+Use this database:
+mysql> USE university;
+Database changed
+Create table Department:
+mysql> create table dept_table
+ -> (dept_no INT,
+ -> dept_name VARCHAR(50) UNIQUE, 
+ -> building_name VARCHAR(50)
+ -> );
+Query OK, 0 rows affected (0.12 sec)
+mysql> desc dept_table;
++---------------+-------------+------+-----+---------+-------+
+| Field | Type | Null | Key | Default | Extra | 
++---------------+-------------+------+-----+---------+-------+ 
+| dept_no | int | YES | | NULL | | 
+| dept_name | varchar(50) | YES | UNI | NULL | | 
+| building_name | varchar(50) | YES | | NULL | | 
++---------------+-------------+------+-----+---------+-------+ 
+3 rows in set (0.05 sec)
+Create Instruction table:
+mysql> create table inst_table(
+ -> inst_id int,
+ -> inst_name varchar(50) NOT NULL,
+ -> dept_no int,
+ -> salary int,
+ -> mob_no int
+ -> );
+Query OK, 0 rows affected (0.06 sec)
+mysql> desc inst_table;
++-----------+-------------+------+-----+---------+-------+
+| Field | Type | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| inst_id | int | YES | | NULL | |
+| inst_name | varchar(50) | NO | | NULL | |
+| dept_no | int | YES | | NULL | |
+| salary | int | YES | | NULL | |
+| mob_no | int | YES | | NULL | |
++-----------+-------------+------+-----+---------+-------+
+5 rows in set (0.01 sec)
+Create table Course:
+mysql> create table course_table(
+ -> course_id int,
+ -> title varchar(50),
+ -> dept_no int,
+ -> credits int
+ -> );
+Query OK, 0 rows affected (0.06 sec)
+mysql> desc course_table;
++-----------+-------------+------+-----+---------+-------+
+| Field | Type | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| course_id | int | YES | | NULL | |
+| title | varchar(50) | YES | | NULL | |
+| dept_no | int | YES | | NULL | |
+| credits | int | YES | | NULL | |
++-----------+-------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+Create table Teaches:
+mysql> create table teaches(
+ -> teacher_id int,
+ -> course_id int,
+ -> semester int,
+ -> year int 
+ -> );
+Query OK, 0 rows affected (0.08 sec)
+mysql> desc teaches;
++------------+------+------+-----+---------+-------+
+| Field | Type | Null | Key | Default | Extra |
++------------+------+------+-----+---------+-------+
+| teacher_id | int | YES | | NULL | |
+| course_id | int | YES | | NULL | |
+| semester | int | YES | | NULL | |
+| year | int | YES | | NULL | |
++------------+------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+QUERIES:
+
+1.Add Primary Key in Department table:
+
+mysql> ALTER TABLE dept_table ADD PRIMARY KEY(dept_no);
+Query OK, 0 rows affected (0.18 sec)
+Records: 0 Duplicates: 0 Warnings: 0
+mysql> DESC dept_table;
++---------------+-------------+------+-----+---------+-------+
+| Field | Type | Null | Key | Default | Extra | 
++---------------+-------------+------+-----+---------+-------+ 
+| dept_no | int | NO | PRI | NULL | | 
+| dept_name | varchar(50) | YES | UNI | NULL | | 
+| building_name | varchar(50) | YES | | NULL | | 
++---------------+-------------+------+-----+---------+-------+ 
+3 rows in set (0.00 sec)
+
+
+2.Add Foreign Key in Instructor table:
+
+mysql> ALTER TABLE inst_table ADD FOREIGN KEY(dept_no) REFERENCES dept
+_table(dept_no);
+Query OK, 0 rows affected (0.30 sec)
+Records: 0 Duplicates: 0 Warnings: 0
+mysql> desc inst_table;
++-----------+-------------+------+-----+---------+-------+
+| Field | Type | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| inst_id | int | YES | | NULL | |
+| inst_name | varchar(50) | NO | | NULL | |
+| dept_no | int | YES | MUL | NULL | |
+| salary | int | YES | | NULL | |
+| mob_no | int | YES | | NULL | |
++-----------+-------------+------+-----+---------+-------+
+5 rows in set (0.01 sec)
+
+3.Adding budget column in department table:
+mysql> ALTER TABLE dept_table ADD budget INT; 
+Query OK, 0 rows affected (0.16 sec)
+Records: 0 Duplicates: 0 Warnings: 0
+mysql> desc dept_table;
++---------------+-------------+------+-----+---------+-------+
+| Field | Type | Null | Key | Default | Extra | 
++---------------+-------------+------+-----+---------+-------+ 
+| dept_no | int | NO | PRI | NULL | | 
+| dept_name | varchar(50) | YES | UNI | NULL | | 
+| building_name | varchar(50) | YES | | NULL | | 
+| budget | int | YES | | NULL | |
++---------------+-------------+------+-----+---------+-------+ 
+4 rows in set (0.04 sec)
+
+4.Create unique index on mobile number of instructor table:
+
+mysql> CREATE INDEX uniqueNo ON inst_table(mob_no);
+Query OK, 0 rows affected (0.17 sec)
+Records: 0 Duplicates: 0 Warnings: 
+
+
+5.Create a view of instructor relation except the salary field.
+mysql> create view myview as select inst_id,inst_name,dept_no,mob_no from inst_table;
+Query OK, 0 rows affected (0.02 sec)
+mysql> desc myview;
++-----------+-------------+------+-----+---------+-------+
+| Field | Type | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| inst_id | int | YES | | NULL | |
+| inst_name | varchar(50) | NO | | NULL | |
+| dept_no | int | YES | | NULL | |
+| mob_no | int | YES | | NULL | |
++-----------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+
+6.Insert record into instructor table using newly created viewname.
+mysql> insert into myview values(1,'nishant',1,12); 
+Query OK, 1 row affected (0.01 sec)
+mysql> insert into myview values(2,'shivam',1,12); 
+Query OK, 1 row affected (0.00 sec)
+
+
+7.Update the department number of particular instructor using update view.
+mysql> update myview set dept_no=2 where inst_name = 'nishant';
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1 Changed: 1 Warnings: 0
+mysql> select * from myview;
++---------+-----------+---------+--------+
+| inst_id | inst_name | dept_no | mob_no |
++---------+-----------+---------+--------+
+| 1 | nishant | 2 | 12 |
+| 2 | shivam | 1 | 12 |
++---------+-----------+---------+--------+
+2 rows in set (0.00 sec)
+
+
+8.Delete record of particular instructor from instructor table using newly created viewname.
+mysql> delete from myview where inst_name = 'shivam';
+Query OK, 1 row affected (0.00 sec)
+mysql> select * from myview;
++---------+-----------+---------+--------+
+| inst_id | inst_name | dept_no | mob_no |
++---------+-----------+---------+--------+
+| 1 | nishant | 2 | 12 |
++---------+-----------+---------+--------+
+1 row in set (0.00 sec)
+
+
+9.Delete the last view
+mysql> drop view myview;
+Query OK, 0 rows affected (0.01 sec)
+
+
+10.Remove the Budget from department table.
+alter table dept_table drop column budget;
+mysql> desc dept_table; 
+
++---------------+-------------+------+-----+---------+-------+
+| Field | Type | Null | Key | Default | Extra |
++---------------+-------------+------+-----+---------+-------+
+| dept_no | int | NO | PRI | NULL | |
+| dept_name | varchar(50) | YES | UNI | NULL | |
+| building_name | varchar(50) | YES | | NULL | |
++---------------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+mysql> desc course_table;
++-----------+-------------+------+-----+---------+-------+
+| Field | Type | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| course_id | int | YES | | NULL | |
+| title | varchar(50) | YES | | NULL | |
+| dept_no | int | YES | | NULL | |
+| credits | int | YES | | NULL | |
++-----------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+11.change datatype of title
+mysql> alter table course_table modify title varchar(100); 
+Query OK, 0 rows affected (0.08 sec)
+Records: 0 Duplicates: 0 Warnings: 0
+mysql> desc course_table;
++-----------+--------------+------+-----+---------+-------+
+| Field | Type | Null | Key | Default | Extra |
++-----------+--------------+------+-----+---------+-------+
+| course_id | int | YES | | NULL | |
+| title | varchar(100) | YES | | NULL | |
+| dept_no | int | YES | | NULL | |
+| credits | int | YES | | NULL | |
++-----------+--------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+
+12.Rename the course table to another table name
+mysql> alter table course_table rename to mycourse;
+Query OK, 0 rows affected (0.02 sec)

@@ -1,0 +1,181 @@
+ASSIGNMENT NO 07
+OUTPUT :
+mysql> use library;
+Database changed
+mysql> create table borrower(rollno int(20),name varchar(20), author
+varchar(20),date_of_issue date,bookname varchar(20),status varchar(20));
+Query OK, 0 rows affected, 1 warning (0.06 sec)
+mysql> create table audit(rollno int(20),name varchar(20), author varchar(20),date_of_issue
+date,bookname varchar(20),status varchar(20),ts varchar(20));
+Query OK, 0 rows affected, 1 warning (0.02 sec)
+mysql> desc audit;
++---------------+-------------+------+-----+---------+-------+
+| Field | Type | Null | Key | Default | Extra |
++---------------+-------------+------+-----+---------+-------+
+| rollno | int | YES | | NULL | |
+| name | varchar(20) | YES | | NULL | |
+| author | varchar(20) | YES | | NULL | |
+| date_of_issue | date | YES | | NULL | |
+| bookname | varchar(20) | YES | | NULL | |
+| status | varchar(20) | YES | | NULL | |
+| ts | varchar(20) | YES | | NULL | |
++---------------+-------------+------+-----+---------+-------+
+7 rows in set (0.06 sec)
+mysql> desc borrower;
++---------------+-------------+------+-----+---------+-------+
+| Field | Type | Null | Key | Default | Extra |
++---------------+-------------+------+-----+---------+-------+
+| rollno | int | YES | | NULL | |
+| name | varchar(20) | YES | | NULL | |
+| author | varchar(20) | YES | | NULL | |
+| date_of_issue | date | YES | | NULL | |
+| bookname | varchar(20) | YES | | NULL | |
+| status | varchar(20) | YES | | NULL | |
++---------------+-------------+------+-----+---------+-------+
+6 rows in set (0.00 sec)
+mysql> insert into borrower values(101,'BABU','APJ KALAM','2022/05/28','WINGS OF
+FIRE','AVIALABLE');
+Query OK, 1 row affected, 1 warning (0.01 sec)
+mysql> insert into borrower values(102,'SAURABH','YAYATI','2021/03/11','NOT
+AVIALABLE','AVIALABLE'),(103,'CHAITNYA','SHIVAJI
+SWANT','2022/04/26','CHHAWA','AVIALABLE'),(104,'ANAND','SANE
+GURUJI','2022/09/14','SHYAM CHI AAI','AVIALABLE'),(105,'SAYALI','SHIVAJI
+SAWANT','2019/03/12','SHIVAJI','NOT AVIALABLE'),(106,'RAJ','SHIVAJI
+SAWANT','2012/09/1','MRUTUNJAY','NOT AVIALABLE');
+Query OK, 5 rows affected, 5 warnings (0.00 sec)
+Records: 5 Duplicates: 0 Warnings: 5
+mysql> insert into borrower values(107,'SHRUTI','TILAK','2019/02/03','GEETA
+RAHSYA','AVIALABLE');
+Query OK, 1 row affected, 1 warning (0.01 sec)
+mysql> SELECT * from borrower;
++--------+----------+----------------+---------------+---------------+---------------+
+| rollno | name | author | date_of_issue | bookname | status |
++--------+----------+----------------+---------------+---------------+---------------+
+| 101 | BABU | APJ KALAM | 2022-05-28 | WINGS OF FIRE | AVIALABLE |
+| 102 | SAURABH | YAYATI | 2021-03-11 | NOT AVIALABLE | AVIALABLE |
+| 103 | CHAITNYA | SHIVAJI SWANT | 2022-04-26 | CHHAWA | AVIALABLE |
+| 104 | ANAND | SANE GURUJI | 2022-09-14 | SHYAM CHI AAI | AVIALABLE |
+| 105 | SAYALI | SHIVAJI SAWANT | 2019-03-12 | SHIVAJI | NOT AVIALABLE |
+| 106 | RAJ | SHIVAJI SAWANT | 2012-09-01 | MRUTUNJAY | NOT AVIALABLE |
+| 107 | SHRUTI | TILAK | 2019-02-03 | GEETA RAHSYA | AVIALABLE |
++--------+----------+----------------+---------------+---------------+---------------+
+7 rows in set (0.00 sec)
+
+
+mysql> delimiter //
+mysql> create trigger library after insert on borrower for
+-> each row
+-> begin
+-> insert into audit
+values(new.rollno,new.name,new.author,new.date_of_issue,new.bookname,new.status,curre
+nt_timestamp);
+-> end;
+-> //
+
+
+Query OK, 0 rows affected (0.01 sec)
+mysql> insert into borrower values(108,'SAI','VS KANDEKAR','2019/05/08','SAI
+KATHA','AVAILABLE')//
+Query OK, 1 row affected, 1 warning (0.01 sec)
+mysql> SELECT *from audit//
++--------+------+-------------+---------------+-----------+-----------+---------------------+
+| rollno | name | author | date_of_issue | bookname | status | ts |
++--------+------+-------------+---------------+-----------+-----------+---------------------+
+| 108 | SAI | VS KANDEKAR | 2019-05-08 | SAI KATHA | AVAILABLE | 2022-09-20
+12:47:03 |
++--------+------+-------------+---------------+-----------+-----------+---------------------+
+1 row in set (0.00 sec)
+mysql> SELECT *from borrower//
++--------+----------+----------------+---------------+---------------+---------------+
+| rollno | name | author | date_of_issue | bookname | status |
++--------+----------+----------------+---------------+---------------+---------------+
+| 101 | BABU | APJ KALAM | 2022-05-28 | WINGS OF FIRE | AVIALABLE |
+| 102 | SAURABH | YAYATI | 2021-03-11 | NOT AVIALABLE | AVIALABLE |
+| 103 | CHAITNYA | SHIVAJI SWANT | 2022-04-26 | CHHAWA | AVIALABLE |
+| 104 | ANAND | SANE GURUJI | 2022-09-14 | SHYAM CHI AAI | AVIALABLE |
+| 105 | SAYALI | SHIVAJI SAWANT | 2019-03-12 | SHIVAJI | NOT AVIALABLE |
+| 106 | RAJ | SHIVAJI SAWANT | 2012-09-01 | MRUTUNJAY | NOT AVIALABLE |
+| 107 | SHRUTI | TILAK | 2019-02-03 | GEETA RAHSYA | AVIALABLE |
+| 108 | SAI | VS KANDEKAR | 2019-05-08 | SAI KATHA | AVAILABLE |
++--------+----------+----------------+---------------+---------------+---------------+
+8 rows in set (0.00 sec)
+
+
+mysql> delimiter //
+mysql> create trigger library1 after update on borrower for
+-> each row
+-> insert into audit
+values(new.rollno,new.name,new.author,new.date_of_issue,new.bookname,new.status,curre
+nt_timestamp);
+-> end;
+-> //
+
+
+Query OK, 0 rows affected (0.01 sec)
+mysql> update borrower set rollno='9',bookname='SHIVAJI-2' where name='SAYALI'//
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1 Changed: 1 Warnings: 0
+mysql> select * from audit//
++--------+--------+----------------+---------------+-----------+---------------+---------------------+
+| rollno | name | author | date_of_issue | bookname | status | ts |
++--------+--------+----------------+---------------+-----------+---------------+---------------------+
+| 108 | SAI | VS KANDEKAR | 2019-05-08 | SAI KATHA | AVAILABLE | 2022-09-20
+12:47:03 |
+| 109 | SAYALI | SHIVAJI SAWANT | 2019-03-12 | SHIVAJI-2 | NOT AVIALABLE |
+2022-09-20 12:56:37 |
++--------+--------+----------------+---------------+-----------+---------------+---------------------+
+2 rows in set (0.00 sec)
+mysql> select * from borrower//
++--------+----------+----------------+---------------+---------------+---------------+
+| rollno | name | author | date_of_issue | bookname | status |
++--------+----------+----------------+---------------+---------------+---------------+
+| 101 | BABU | APJ KALAM | 2022-05-28 | WINGS OF FIRE | AVIALABLE |
+| 102 | SAURABH | YAYATI | 2021-03-11 | NOT AVIALABLE | AVIALABLE |
+| 103 | CHAITNYA | SHIVAJI SWANT | 2022-04-26 | CHHAWA | AVIALABLE |
+| 104 | ANAND | SANE GURUJI | 2022-09-14 | SHYAM CHI AAI | AVIALABLE |
+| 109 | SAYALI | SHIVAJI SAWANT | 2019-03-12 | SHIVAJI-2 | NOT AVIALABLE |
+| 106 | RAJ | SHIVAJI SAWANT | 2012-09-01 | MRUTUNJAY | NOT AVIALABLE |
+| 107 | SHRUTI | TILAK | 2019-02-03 | GEETA RAHSYA | AVIALABLE |
+| 108 | SAI | VS KANDEKAR | 2019-05-08 | SAI KATHA | AVAILABLE |
++--------+----------+----------------+---------------+---------------+---------------+
+8 rows in set (0.00 sec)
+
+
+mysql> delimiter //
+mysql> create trigger library2 after delete on borrower for
+-> each row
+-> insert into audit
+values(old.rollno,old.name,old.author,old.date_of_issue,old.bookname,old.status,current_tim
+estamp);
+-> end;
+-> //
+
+
+Query OK, 0 rows affected (0.01 sec)
+mysql> delete from borrower where rollno='9'//
+Query OK, 1 row affected (0.01 sec)
+mysql> select * from borrower//
++--------+----------+----------------+---------------+---------------+---------------+
+| rollno | name | author | date_of_issue | bookname | status |
++--------+----------+----------------+---------------+---------------+---------------+
+| 101 | BABU | APJ KALAM | 2022-05-28 | WINGS OF FIRE | AVIALABLE |
+| 102 | SAURABH | YAYATI | 2021-03-11 | NOT AVIALABLE | AVIALABLE |
+| 103 | CHAITNYA | SHIVAJI SWANT | 2022-04-26 | CHHAWA | AVIALABLE |
+| 104 | ANAND | SANE GURUJI | 2022-09-14 | SHYAM CHI AAI | AVIALABLE |
+| 106 | RAJ | SHIVAJI SAWANT | 2012-09-01 | MRUTUNJAY | NOT AVIALABLE |
+| 107 | SHRUTI | TILAK | 2019-02-03 | GEETA RAHSYA | AVIALABLE |
+| 108 | SAI | VS KANDEKAR | 2019-05-08 | SAI KATHA | AVAILABLE |
++--------+----------+----------------+---------------+---------------+---------------+
+7 rows in set (0.00 sec)
+mysql> select * from audit//
++--------+--------+----------------+---------------+-----------+---------------+---------------------+
+| rollno | name | author | date_of_issue | bookname | status | ts |
++--------+--------+----------------+---------------+-----------+---------------+---------------------+
+| 108 | SAI | VS KANDEKAR | 2019-05-08 | SAI KATHA | AVAILABLE | 2022-09-20
+12:47:03 |
+| 109 | SAYALI | SHIVAJI SAWANT | 2019-03-12 | SHIVAJI-2 | NOT AVIALABLE |
+2022-09-20 12:56:37 |
+| 109 | SAYALI | SHIVAJI SAWANT | 2019-03-12 | SHIVAJI-2 | NOT AVIALABLE |
+2022-09-20 13:05:10 |
++--------+--------+----------------+---------------+-----------+---------------+---------------------+
+3 rows in set (0.00 sec)

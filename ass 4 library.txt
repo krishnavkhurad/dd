@@ -1,0 +1,74 @@
+mysql> use library;
+Database changed
+mysql> show tables;
++-------------------+
+| Tables_in_library |
++-------------------+
+| borrower          |
+| fine              |
++-------------------+
+2 rows in set (0.00 sec)
+
+mysql> selet * from borrower;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'selet * from borrower' at line 1
+mysql> select * from borrower;
++---------+---------+------------+--------------+--------+
+| roll_no | name    | date_of_i  | book_name    | status |
++---------+---------+------------+--------------+--------+
+|       1 | harsh   | 2017-06-12 | harry potter | i      |
+|       2 | sandesh | 2017-06-15 | iceage       | r      |
+|       3 | Rahul   | 2017-07-25 | pokemon      | i      |
+|       4 | sarvesh | 2017-04-20 | duel         | r      |
+|       5 | ishwari | 2017-05-22 | hindikatha   | i      |
++---------+---------+------------+--------------+--------+
+5 rows in set (0.00 sec)
+
+mysql> select * from fine;
+Empty set (0.00 sec)
+
+
+
+mysql> delimiter $
+mysql> create procedure fine_cal(IN rno int(20),name varchar(20))
+    -> begin
+    -> declare i_date date;
+    -> declare diff int;
+    -> declare fine_amt int;
+    -> declare exit handler for sqlexception select 'Table not found';
+    -> select date_of_i into i_date from borrower where roll_no=rno and book_name = name;
+    -> select datediff(curdate(),i_date)into diff;
+    -> if(diff>15 and diff<=30) then
+    -> set fine_amt = diff*5;
+    -> insert into fine values(rno,curdate(),fine_amt);
+    -> elseif(diff>30) then
+    -> set fine_amt=15*5 + (diff - 30)*50;
+    -> insert into fine values(rno,curdate(),fine_amt);
+    -> end if;
+    -> update borrower set status ='R' where roll_no = rno and book_name=name;
+    -> end;
+    -> $
+Query OK, 0 rows affected, 1 warning (0.00 sec)
+
+mysql> call fine_cal(3,"pokemon")$
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from fine$
++---------+------------+-------+
+| roll_no | Date       | amt   |
++---------+------------+-------+
+|       3 | 2022-11-22 | 95875 |
++---------+------------+-------+
+1 row in set (0.00 sec)
+
+mysql> delimiter ;
+mysql> select * from borrower;
++---------+---------+------------+--------------+--------+
+| roll_no | name    | date_of_i  | book_name    | status |
++---------+---------+------------+--------------+--------+
+|       1 | harsh   | 2017-06-12 | harry potter | i      |
+|       2 | sandesh | 2017-06-15 | iceage       | r      |
+|       3 | Rahul   | 2017-07-25 | pokemon      | R      |
+|       4 | sarvesh | 2017-04-20 | duel         | r      |
+|       5 | ishwari | 2017-05-22 | hindikatha   | i      |
++---------+---------+------------+--------------+--------+
+5 rows in set (0.00 sec)

@@ -1,0 +1,44 @@
+
+
+create table O_rollcall(roll_no  int,name varchar(50),marks int);
+create table N_rollcall(roll_no  int,name varchar(50),marks int);
+insert into O_rollcall values(1,'pratik',39);
+insert into O_rollcall values(2,'Raj',35);
+insert into O_rollcall values(3,'Om',41);
+insert into O_rollcall values(4,'Yash',37);
+insert into O_rollcall values(5,'ayushi',46);
+
+insert into N_rollcall values(10,'vrp',21);
+insert into N_rollcall values(4,'Yash',37);
+insert into N_rollcall values(15,'hritik',16);
+insert into N_rollcall values(13,'ritik',6);
+
+declare 
+cursor o_cur is select * from O_rollcall;
+cursor n_cur(a int) is select * from N_rollcall where roll_no = a;
+new_record N_rollcall%rowtype;
+begin 
+for stud_rec in o_cur
+loop
+open n_cur(stud_rec.roll_no);
+fetch  n_cur into new_record;
+if n_cur%notfound then insert into n_rollcall values(stud_rec.roll_no,stud_rec.name,stud_rec.marks);
+end if;
+close n_cur;
+end loop;
+end;
+/
+select * from N_rollcall;
+
+
+
+O/P-
+ROLL_NO	NAME	MARKS
+1				pratik		39
+2				Raj		35
+3				Om		41
+5				ayushi	46
+10				vrp		21
+4				Yash		37
+15				hritik		16
+13				ritik		6

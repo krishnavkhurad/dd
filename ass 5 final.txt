@@ -1,0 +1,88 @@
+mysql> create database assig5;
+    -> //
+Query OK, 1 row affected (0.00 sec)
+
+mysql> use assig5;
+ERROR 1049 (42000): Unknown database 'assig5;'
+mysql> use assig5//
+Database changed
+mysql> delimiter;
+    -> //
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'delimiter' at line 1
+mysql> delimiter ;
+mysql> show tables;
+Empty set (0.00 sec)
+
+mysql> create table stud(name varchar(20),marks int);
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> create table res(roll int,name varchar(20),class varchar(20));
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> delimiter //
+mysql> create procedure grade(IN roll int,name varchar(20),marks int)
+    -> begin
+    -> declare class varchar(20);
+    -> if marks <=1500 and marks>990 then set class ="Distinction";
+    -> elseif marks <=989 and marks>900 then set class ="first";
+    -> elseif marks <=899 and marks>825 then set class ="second";
+    -> else set class="unkown";
+    -> end if;
+    -> insert into stud values(name,marks);
+    -> insert into res values(roll,name,class);
+    -> end//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> call grade(1,"yash",1245):
+    -> //
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ':' at line 1
+mysql> call grade(1,"yash",1245)//
+Query OK, 1 row affected (0.01 sec)
+
+mysql> call grade(2,"om",500)//
+Query OK, 1 row affected (0.00 sec)
+
+mysql> delimiter;
+    -> //
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'delimiter' at line 1
+mysql> delimiter ;
+mysql>mysql> select * from res;
++------+------+-------------+
+| roll | name | class       |
++------+------+-------------+
+|    1 | yash | Distinction |
+|    2 | om   | unkown      |
++------+------+-------------+
+2 rows in set (0.00 sec)
+
+mysql> select * from std_marks;
+ERROR 1146 (42S02): Table 'assig5.std_marks' doesn't exist
+mysql> select * from stud;
++------+-------+
+| name | marks |
++------+-------+
+| yash |  1245 |
+| om   |   500 |
++------+-------+
+2 rows in set (0.00 sec)
+
+delimiter  //
+create function func1(classname varchar(50))
+returns int
+READS SQL DATA
+DETERMINISTIC
+begin
+declare num int;
+select distinct count(*) into num from res where class = classname;
+return num;
+end //
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select func1("unkown")//
++-----------------+
+| func1("unkown") |
++-----------------+
+|               1 |
++-----------------+
+1 row in set (0.00 sec)
+ 
